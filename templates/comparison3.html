@@ -1,0 +1,235 @@
+{% extends 'base3.html' %}
+
+{% block title %}
+    Comparison
+{% endblock %}
+
+{% block sidebar %}
+    <h4 class="mb-4 text-center form-title">Option Pricing Inputs</h4>
+    <form id="pricing-form" class="styled-form" method="POST" action="{{ url_for('comparison_page3') }}">
+        <!-- {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %} -->
+
+        <div class="form-group">
+            <label for="ticker">Ticker Symbol</label>
+            <input type="text" class="form-control" id="ticker" name="ticker" value="{{ session.get('ticker', 'AAPL') }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="strike-price">Strike Price ($)</label>
+            <input type="number" class="form-control" id="strike-price" name="strike_price" value="{{ session.get('strike_price', session.get('underlying_price', '')) }}" step="0.01" required>
+        </div>
+
+        <div class="form-group">
+            <label for="maturity">Maturity (years)</label>
+            <input type="number" class="form-control" id="maturity" name="maturity" value="{{ session.get('maturity', '1') }}" step="0.01" required>
+        </div>
+
+        <div class="form-group">
+            <label for="risk-free-rate">Risk-Free Rate (dec)</label>
+            <input type="number" class="form-control" id="risk-free-rate" name="risk_free_rate" value="{{ session.get('risk_free_rate', '0.05') }}" step="any" required>
+        </div>
+
+        <div class="form-group">
+            <label for="sigma">Volatility for bsm (dec)</label>
+            <input type="number" class="form-control" id="sigma" name="sigma" value="{{ session.get('sigma', '0.20') }}" step="any" required>
+        </div>
+
+
+        <div class="form-group">
+            <label for="kappa">Kappa</label>
+            <input type="number" class="form-control" id="kappa" name="kappa" value="{{ session.get('kappa', '2') }}" step="any" required>
+        </div>
+
+        <div class="form-group">
+            <label for="theta">Theta (dec)</label>
+            <input type="number" class="form-control" id="theta" name="theta" value="{{ session.get('theta', '0.04') }}" step="any" required>
+        </div>
+
+        <div class="form-group">    
+            <label for="vol-of-vol">Vol of Vol (dec)</label>
+            <input type="number" class="form-control" id="vol-of-vol" name="vol_of_vol" value="{{ session.get('vol_of_vol', '0.5') }}" step="any" required>
+        </div>
+
+        <div class="form-group">
+            <label for="rho">Rho (dec)</label>
+            <input type="number" class="form-control" id="rho" name="rho" value="{{ session.get('rho', '-0.5') }}" step="any" required>
+        </div>
+
+        <div class="form-group">
+            <label for="v0">Initial Variance (dec)</label>
+            <input type="number" class="form-control" id="v0" name="v0" value="{{ session.get('v0', '0.04') }}" step="any" required>
+        </div>
+
+        <div class="form-group">
+            <label for="num-paths">Number of Paths</label>
+            <input type="number" class="form-control" id="num-paths" name="num_paths" value="{{ session.get('num_paths', 1000) }}" step="1" required>
+        </div>
+
+        <div class="form-group">
+            <label for="num-steps">Number of Steps</label>
+            <input type="number" class="form-control" id="num-steps" name="num_steps" value="{{ session.get('num_steps', 252) }}" step="1" required>
+        </div>
+
+        <div class="form-group">
+            <label>Option Type</label>
+            <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
+                <label class="btn btn-outline-primary {% if session.get('option_type', 'call') == 'call' %}active{% endif %}">
+                    <input type="radio" name="option_type" value="call" {% if session.get('option_type', 'call') == 'call' %}checked{% endif %}> Call
+                </label>
+                <label class="btn btn-outline-primary {% if session.get('option_type', 'call') == 'put' %}active{% endif %}">
+                    <input type="radio" name="option_type" value="put" {% if session.get('option_type', 'call') == 'put' %}checked{% endif %}> Put
+                </label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-outline-primary btn-block">Calculate</button>
+    </form>
+{% endblock %}
+
+{% block content %}
+    <main class="content" style="margin-left: 350px; padding: 20px;">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div id="loading-spinner" class="text-center d-none">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <p>Calculating... Please wait.</p>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const form = document.getElementById("pricing-form");
+                const spinner = document.getElementById("loading-spinner");
+        
+                form.addEventListener("submit", function () {
+                    spinner.classList.remove("d-none"); // Show spinner
+                });
+            });
+        </script>
+        
+        
+
+        <!-- Convergence Plot -->
+        <div class="d-flex justify-content-center">
+            <div class="col-lg-8 mt-4">
+                <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                    <div class="card-header bg-gradient-success text-white py-3">
+                        <h3 class="card-title fw-bold mb-0">Convergence Plot</h3>
+                    </div>
+                    <div class="card-body text-center p-0">
+                        {% if results_filename %}
+                            <div id="convergence-plot"></div>
+                            <div id="convergence-fallback" class="d-none text-danger py-3">
+                                Failed to load the convergence plot. Please try again later.
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info m-0">
+                                No convergence plot available. Submit the form to generate the plot.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Plot -->
+        <div class="d-flex justify-content-center">
+            <div class="col-lg-8 mt-4">
+                <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                    <div class="card-header bg-gradient-danger text-white py-3">
+                        <h3 class="card-title fw-bold mb-0">Error Plot</h3>
+                    </div>
+                    <div class="card-body text-center p-0">
+                        {% if errors_filename %}
+                            <div id="error-plot"></div>
+                            <div id="error-fallback" class="d-none text-danger py-3">
+                                Failed to load the error plot. Please try again later.
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info m-0">
+                                No error plot available. Submit the form to generate the plot.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Time Plot -->
+        <div class="d-flex justify-content-center">
+            <div class="col-lg-8 mt-4">
+                <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                    <div class="card-header bg-gradient-primary text-white py-3">
+                        <h3 class="card-title fw-bold mb-0">Time Plot</h3>
+                    </div>
+                    <div class="card-body text-center p-0">
+                        {% if time_dict_filename %}
+                            <div id="time-plot"></div>
+                            <div id="time-fallback" class="d-none text-danger py-3">
+                                Failed to load the time plot. Please try again later.
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info m-0">
+                                No time plot available. Submit the form to generate the plot.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Load Plotly.js -->
+        <script src="https://cdn.plot.ly/plotly-latest.min.js" async></script>
+        <script>
+            window.addEventListener('load', function () {
+                {% if results_filename %}
+                    fetch("{{ url_for('static', filename='plotly/' + results_filename) }}")
+                        .then(response => response.json())
+                        .then(figure => Plotly.newPlot('convergence-plot', figure.data, figure.layout))
+                        .catch(() => document.getElementById('convergence-fallback').classList.remove('d-none'));
+                {% endif %}
+
+                {% if errors_filename %}
+                    fetch("{{ url_for('static', filename='plotly/' + errors_filename) }}")
+                        .then(response => response.json())
+                        .then(figure => Plotly.newPlot('error-plot', figure.data, figure.layout))
+                        .catch(() => document.getElementById('error-fallback').classList.remove('d-none'));
+                {% endif %}
+
+                {% if time_dict_filename %}
+                    fetch("{{ url_for('static', filename='plotly/' + time_dict_filename) }}")
+                        .then(response => response.json())
+                        .then(figure => Plotly.newPlot('time-plot', figure.data, figure.layout))
+                        .catch(() => document.getElementById('time-fallback').classList.remove('d-none'));
+                {% endif %}
+            });
+        </script>
+    </main>
+{% endblock %}

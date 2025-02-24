@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <script src="/static/scripts.js"></script>
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/header.css">
+    <link rel="stylesheet" href="/static/css/sidebar.css">
+    <link rel="stylesheet" href="/static/css/content.css">
+
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="nav-container">
+        <nav class="navbar navbar-expand-lg navbar-custom navbar-centered">
+            <div class="navbar-logo d-flex align-items-center me-3">
+                <img src="{{ url_for('static', filename='favicon.png')}}">
+            </div>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item {% if active_page|default('home') == 'home' %}active{% endif %}">
+                        <a class="nav-link" data-target="home" href="{{ url_for('home_page2') }}">Computations</a>
+                    </li>
+                    <li class="nav-item {% if active_page|default('home') == 'comparison' %}active{% endif %}">
+                        <a class="nav-link" data-target="comparison" href="{{ url_for('comparison_page2') }}">Methods Comparison</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-content">
+            {% block sidebar %}
+                <!-- Default sidebar content -->
+                <h4 class="mb-4 text-center form-title">Option Pricing Inputs</h4>
+                <form id="pricing-form" class="styled-form" method="POST" action="{{ url_for(current_route) }}">
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <div class="flash-messages">
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ category }} alert-dismissible fade show">
+                                        {{ message }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- Form Inputs -->
+                    <div class="form-group">
+                        <label for="ticker">Ticker Symbol</label>
+                        <input type="text" class="form-control" id="ticker" name="ticker" value="{{ session.get('ticker', 'AAPL') }}" placeholder="AAPL" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="strike-price">Strike Price ($)</label>
+                        <input type="number" class="form-control" id="strike-price" name="strike_price" value="{{ session.get('strike_price', session.get('underlying_price', '')) }}" step="0.01" min="0.01" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="maturity">Maturity (years)</label>
+                        <input type="number" class="form-control" id="maturity" name="maturity" value="{{ session.get('maturity', '1') }}" step="0.01" min="0.01" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="risk-free-rate">Risk-Free Rate (dec)</label>
+                        <input type="number" class="form-control" id="risk-free-rate" name="risk_free_rate" value="{{ session.get('risk_free_rate', '0.05') }}" step="any" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sigma">Volatility (dec)</label>
+                        <input type="number" class="form-control" id="sigma" name="sigma" value="{{ session.get('sigma', '0.20') }}" step="any" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="method">Pricing Method</label>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary dropdown-toggle w-100 text-left" type="button" id="method" data-toggle="dropdown" aria-expanded="false">
+                                {{ session.get('method') if session.get('method') else 'Select Method' }}
+                            </button>
+                            <div class="dropdown-menu">
+                                {% for method in ['Black-Scholes', 'Gbm Discrete', 'Euler Maruyama', 'Milstein Scheme'] %}
+                                    <a class="dropdown-item {% if session.get('method') == method %}active{% endif %}" href="#" data-value="{{ method }}" onclick="setMethod('{{ method | e }}')">{{ method }}</a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <input type="hidden" id="method-input" name="method" value="{{ session.get('method', '') }}">
+                    </div>
+
+                    <!-- Dynamic Fields for Monte Carlo Methods -->
+                    <div class="form-group" id="num-paths-container" style="display: {% if session.get('method') in ['Gbm Discrete', 'Euler Maruyama', 'Milstein Scheme'] %}block{% else %}none{% endif %};">
+                        <label for="num-paths">Number of Paths</label>
+                        <input type="number" class="form-control" id="num-paths" name="num_paths" value="{{ session.get('num_paths', 1000) }}" step="1" min="1" required>
+                    </div>
+
+                    <div class="form-group" id="num-steps-container" style="display: {% if session.get('method') in ['Gbm Discrete', 'Euler Maruyama', 'Milstein Scheme'] %}block{% else %}none{% endif %};">
+                        <label for="num-steps">Number of Steps</label>
+                        <input type="number" class="form-control" id="num-steps" name="num_steps" value="{{ session.get('num_steps', 252) }}" step="1" min="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Option Type</label>
+                        <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
+                            <label class="btn btn-outline-primary {% if session.get('option_type', 'call') == 'call' %}active{% endif %}">
+                                <input type="radio" name="option_type" value="call" {% if session.get('option_type', 'call') == 'call' %}checked{% endif %}> Call
+                            </label>
+                            <label class="btn btn-outline-primary {% if session.get('option_type', 'call') == 'put' %}active{% endif %}">
+                                <input type="radio" name="option_type" value="put" {% if session.get('option_type', 'call') == 'put' %}checked{% endif %}> Put
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-primary btn-block">Calculate</button>
+                </form>
+            {% endblock %}
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- External Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <!-- Custom Scripts -->
+    <script>
+        function setMethod(method) {
+            document.getElementById('method-input').value = method;
+            
+            if (['Gbm Discrete', 'Euler Maruyama', 'Milstein Scheme'].includes(method)) {
+                document.getElementById('num-paths-container').style.display = 'block';  // Show num-paths
+                document.getElementById('num-steps-container').style.display = 'block';  // Show num-steps
+            } else {
+                document.getElementById('num-paths-container').style.display = 'none';   // Hide both if an unknown method
+                document.getElementById('num-steps-container').style.display = 'none';
+            }
+
+            $('#method').text(method);
+        }
+
+        $(document).ready(function() {
+            // Initialize method display based on session
+            const selectedMethod = document.getElementById('method-input').value;
+            setMethod(selectedMethod);
+
+            // Handle dropdown selection
+            $('.dropdown-item').click(function(e) {
+                e.preventDefault();
+                const method = $(this).data('value');
+                $('#method').text(method);
+                setMethod(method);
+            });
+
+        });
+    </script>
+
+</body>
+</html>

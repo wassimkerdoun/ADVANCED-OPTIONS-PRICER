@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Home</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <!-- Favicons -->
+  <link href="/static/images/favicon.png" rel="icon">
+  <link href="/static/images/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/static/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/static/vendor/aos/aos.css" rel="stylesheet">
+  <link href="/static/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="/static/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="/static/css/main.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: Impact
+  * Template URL: https://bootstrapmade.com/impact-bootstrap-business-website-template/
+  * Updated: Aug 07 2024 with Bootstrap v5.3.3
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body class="index-page">
+
+  <header id="header" class="header fixed-top">
+
+
+    <div class="branding d-flex align-items-cente">
+
+      <div class="container position-relative d-flex align-items-center justify-content-between">
+        <a href="index.html" class="logo d-flex align-items-center">
+          <!-- Uncomment the line below if you also wish to use an image logo -->
+          <!-- <img src="assets/img/logo.png" alt=""> -->
+          <h1 class="sitename">Quant Edge</h1>
+          <span>.</span>
+        </a>
+
+        <nav id="navmenu" class="navmenu">
+          <ul>
+            <li><a href="#hero" class="active">Home<br></a></li>
+            <li><a href="#page1">Variance Reduction</a></li>
+            <li><a href="#page2">Discretization</a></li>
+            <li><a href="#page3">Heston Model</a></li>
+            <li><a href="#page4">Volatility Plots</a></li>
+            <li><a href="#footer">About Us</a></li>
+          </ul>
+          <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+        </nav>
+
+      </div>
+
+    </div>
+
+  </header>
+
+  <main class="main">
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero section accent-background">
+
+      <div class="container position-relative" data-aos="fade-up" data-aos-delay="100">
+        <div class="row gy-5 justify-content-between">
+          <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center">
+            <h2><span>Welcome to </span><span class="accent">Quant Edge</span></h2>
+            <p>Advanced Numerical Methods for Financial Engineering </p>
+            <div class="d-flex">
+              <a href="https://github.com/wassim-kerdoun" target="_blank" rel="noopener noreferrer" class="btn-get-started">View Code on GitHub</a>
+            </div>
+          </div>
+          <div class="col-lg-5 order-1 order-lg-2">
+            <img src="/static/images/hero-img.svg" class="img-fluid" alt="">
+          </div>
+        </div>
+      </div>
+
+      <div class="icon-boxes position-relative" data-aos="fade-up" data-aos-delay="200">
+        <div class="container position-relative">
+          <div class="row gy-4 mt-5">
+
+            <div class="col-xl-3 col-md-6">
+              <div class="icon-box">
+                <div class="icon"><i class="bi bi-easel"></i></div>
+                <h4 class="title"><a href="{{ url_for('home_page1') }}" target="_blank" rel="noopener noreferrer" class="stretched-link">Variance Reduction</a></h4>
+              </div>
+            </div><!--End Icon Box -->
+
+            <div class="col-xl-3 col-md-6">
+              <div class="icon-box">
+                <div class="icon"><i class="bi bi-bar-chart-line-fill"></i></div>
+                <h4 class="title"><a href="{{ url_for('home_page2') }}" target="_blank" rel="noopener noreferrer" class="stretched-link">Discretization</a></h4>
+              </div>
+            </div><!--End Icon Box -->
+
+            <div class="col-xl-3 col-md-6">
+              <div class="icon-box">
+                <div class="icon"><i class="bi bi-calculator"></i></div>
+                <h4 class="title"><a href="{{ url_for('home_page3') }}" target="_blank" rel="noopener noreferrer" class="stretched-link">Heston Model</a></h4>
+              </div>
+            </div><!--End Icon Box -->
+
+            <div class="col-xl-3 col-md-6">
+              <div class="icon-box">
+                <div class="icon"><i class="bi bi-command"></i></div>
+                <h4 class="title"><a href="{{ url_for('volatility_page') }}" target="_blank" rel="noopener noreferrer" class="stretched-link">Volatility Plots</a></h4>
+              </div>
+            </div><!--End Icon Box -->
+
+          </div>
+        </div>
+      </div>
+
+    </section><!-- /Hero Section -->
+
+    <!-- About Section -->
+    <section id="page1" class="about section">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Variance Reduction in Monte Carlo Simulation</h2>
+        <p>Enhancing Monte Carlo efficiency through Antithetic Variates and Control Variates methods.</p>
+      </div><!-- End Section Title -->
+
+      <div class="container">
+
+        <div class="row gy-4">
+          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <h3>Antithetic Variates Method</h3>
+            <img src="/static/images/about.webp" class="img-fluid rounded-4 mb-4" alt="Variance Reduction">
+            <p>
+              The <b>Antithetic Variates</b> method is a variance reduction technique that leverages negatively correlated random variables 
+              to improve Monte Carlo efficiency. Instead of generating independent random samples, we generate pairs of  <b>positively and negatively correlated</b> values. 
+            </p>
+            <p>
+              This approach helps to <b>reduce fluctuations</b> in simulation results, leading to more accurate estimates with fewer simulation runs. 
+              It is particularly effective in pricing financial derivatives and risk assessment models.
+            </p>
+          </div>
+          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="250">
+            <div class="content ps-0 ps-lg-5">
+              <h3>Control Variates Method</h3>
+              <p class="fst-italic">
+                The <b>Control Variates</b> method improves Monte Carlo accuracy by using known expected values of correlated variables 
+                to adjust simulation estimates.
+              </p>
+              <ul>
+                <li><i class="bi bi-check-circle-fill"></i> <span>Reduces simulation error by leveraging known statistical properties.</span></li>
+                <li><i class="bi bi-check-circle-fill"></i> <span>Uses a correlated control variable to adjust the primary estimate.</span></li>
+                <li><i class="bi bi-check-circle-fill"></i> <span>Commonly applied in financial option pricing and risk management.</span></li>
+              </ul>
+              <p>
+                By incorporating auxiliary information, the Control Variates method ensures <b>faster convergence</b> of Monte Carlo estimations 
+                with reduced computational effort.
+              </p>
+
+              <div class="position-relative mt-4">
+                <img src="/static/images/about-2.jpg" class="img-fluid rounded-4" alt="Monte Carlo Methods">
+                <a href="https://www.youtube.com/watch?v=jejjUPfaIXY" class="glightbox pulsating-play-btn"></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /About Section -->
+
+
+    <!-- About Section -->
+    <!-- Include MathJax for LaTeX rendering -->
+    <script type="text/javascript" async
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+
+    <!-- About Section -->
+    <section id="page2" class="about section">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Discretization of Geometric Brownian Motion (GBM) SDE</h2>
+        <p>Monte Carlo simulations for stochastic differential equations (SDEs) require numerical discretization methods. The most common approaches are the Euler-Maruyama and Milstein schemes.</p>
+      </div><!-- End Section Title -->
+
+      <div class="container">
+
+        <div class="row gy-4">
+          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <h3>Monte Carlo Simulation of GBM</h3>
+            <img src="/static/images/gbm-simulation.png" class="img-fluid rounded-4 mb-4" alt="GBM Simulation">
+            <p>The <strong>Geometric Brownian Motion (GBM)</strong> is widely used in financial modeling, particularly for asset prices. It follows the stochastic differential equation:</p>
+            <p>
+              $$ dS_t = \mu S_t dt + \sigma S_t dW_t $$
+            </p>
+            <p>where \( S_t \) is the asset price, \( \mu \) is the drift, \( \sigma \) is the volatility, and \( W_t \) is a Wiener process.</p>
+            <p>Monte Carlo methods approximate solutions by simulating many random paths of \( S_t \) using discrete time steps.</p>
+          </div>
+          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="250">
+            <div class="content ps-0 ps-lg-5">
+              <h3>Numerical Discretization Methods</h3>
+              <ul>
+                <li><i class="bi bi-check-circle-fill"></i> <strong>Euler-Maruyama Scheme:</strong> The simplest method, using a first-order approximation:
+                  <p>
+                    $$ S_{t+\Delta t} = S_t + \mu S_t \Delta t + \sigma S_t \sqrt{\Delta t} \, Z_t $$
+                  </p>
+                  where \( Z_t \sim N(0,1) \).
+                </li>
+                <li><i class="bi bi-check-circle-fill"></i> <strong>Milstein Scheme:</strong> An improved version that includes an extra correction term:
+                  <p>
+                    $$ S_{t+\Delta t} = S_t + \mu S_t \Delta t + \sigma S_t \sqrt{\Delta t} \, Z_t + \frac{1}{2} \sigma^2 S_t (\Delta t Z_t^2 - \Delta t) $$
+                  </p>
+                </li>
+                <li><i class="bi bi-check-circle-fill"></i> <strong>Monte Carlo Convergence:</strong> The Milstein scheme reduces discretization error and improves convergence compared to Euler-Maruyama.</li>
+              </ul>
+              <p>These numerical methods allow efficient simulation of asset prices under stochastic processes, essential for option pricing and risk management.</p>
+
+              <div class="position-relative mt-4">
+                <img src="/static/images/milstein-vs-euler.jpg" class="img-fluid rounded-4" alt="Euler vs Milstein">
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /About Section -->
+
+
+    <!-- Include MathJax for LaTeX rendering -->
+    <script type="text/javascript" async
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+
+    <!-- About Section -->
+    <section id="page3" class="about section">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Heston Stochastic Volatility Model</h2>
+        <p>The Heston model is a widely used stochastic volatility model in financial mathematics.</p>
+      </div><!-- End Section Title -->
+
+      <div class="container">
+
+        <div class="row gy-4">
+          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <h3>Understanding the Heston Model</h3>
+            <img src="/static/images/heston-model.jpg" class="img-fluid rounded-4 mb-4" alt="Heston Model">
+            <p>The Heston model is a <b>stochastic volatility model</b> used to describe the evolution of asset prices. It extends the Geometric Brownian Motion (GBM) by allowing <b>volatility to be stochastic</b>.</p>
+            <p>It is defined by the system of <b>stochastic differential equations (SDEs)</b>:</p>
+            <p>
+              $$ dS_t = \mu S_t dt + \sqrt{V_t} S_t dW_t^S $$
+            </p>
+            <p>
+              $$ dV_t = \kappa (\theta - V_t) dt + \sigma \sqrt{V_t} dW_t^V $$
+            </p>
+            <p><b>where:</b></p>
+            <ul>
+              <li><b>\( S_t \)</b> = asset price</li>
+              <li><b>\( V_t \)</b> = variance (volatility squared)</li>
+              <li><b>\( \mu \)</b> = risk-free rate</li>
+              <li><b>\( \kappa \)</b> = mean-reversion speed</li>
+              <li><b>\( \theta \)</b> = long-term variance</li>
+              <li><b>\( \sigma \)</b> = volatility of variance</li>
+              <li><b>\( W_t^S \)</b> and <b>\( W_t^V \)</b> = correlated Wiener processes with correlation <b>\( \rho \)</b></li>
+            </ul>
+            <p>The correlation between <b>\( W_t^S \)</b> and <b>\( W_t^V \)</b> is given by:</p>
+            <p>
+              $$ dW_t^S dW_t^V = \rho dt $$
+            </p>
+          </div>
+
+          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="250">
+            <div class="content ps-0 ps-lg-5">
+              <h3>Key Features & Applications</h3>
+              <ul>
+                <li><i class="bi bi-check-circle-fill"></i> <b>Mean-reverting variance:</b> The variance \( V_t \) tends to revert to \( \theta \).</li>
+                <li><i class="bi bi-check-circle-fill"></i> <b>Explains volatility smile/skew:</b> Unlike the Black-Scholes model, the Heston model captures market-implied volatility structures.</li>
+                <li><i class="bi bi-check-circle-fill"></i> <b>Used in option pricing:</b> The model is widely used for pricing derivatives.</li>
+              </ul>
+              <p>The model is solved using numerical methods like <b>Monte Carlo simulation</b>, <b>Fourier transform methods</b>, and <b>finite difference schemes</b>.</p>
+
+              <div class="position-relative mt-4">
+                <img src="/static/images/heston-simulation.jpg" class="img-fluid rounded-4" alt="Heston Simulation">
+                <a href="https://www.youtube.com/watch?v=o8C6DxZh8dw" class="glightbox pulsating-play-btn"></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /About Section -->
+
+
+
+
+    <!-- Include MathJax for LaTeX rendering -->
+    <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+
+    <!-- Volatility Plots Section -->
+    <section id="page4" class="about section">
+
+    <!-- Section Title -->
+    <div class="container section-title" data-aos="fade-up">
+      <h2>Volatility Analysis using the Heston Model</h2>
+      <p>Exploring volatility smile and surface plots derived from the Heston stochastic volatility model.</p>
+    </div><!-- End Section Title -->
+
+    <div class="container">
+
+      <div class="row gy-4">
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+          <h3>Understanding Volatility Smile</h3>
+          <img src="/static/images/volatility-smile.png" class="img-fluid rounded-4 mb-4" alt="Volatility Smile">
+          <p>The <b>volatility smile</b> is a curve that represents the implied volatility of options across different strike prices. The Heston model captures this phenomenon, unlike the Black-Scholes model, which assumes constant volatility.</p>
+          <p><b>Key Observations:</b></p>
+          <ul>
+            <li><b>Out-of-the-money (OTM) and in-the-money (ITM) options</b> tend to have higher implied volatilities than at-the-money (ATM) options.</li>
+            <li><b>Market impact:</b> Volatility smiles are commonly observed in equity, FX, and commodity options.</li>
+            <li><b>Heston’s stochastic volatility model</b> provides a more realistic volatility structure by allowing variance to change over time.</li>
+          </ul>
+        </div>
+
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="250">
+          <h3>Volatility Surface Visualization</h3>
+          <img src="/static/images/volatility-surface.jpg" class="img-fluid rounded-4 mb-4" alt="Volatility Surface">
+          <p>The <b>volatility surface</b> extends the volatility smile concept by incorporating both <b>strike price</b> and <b>time to maturity</b>.</p>
+          <p>The Heston model generates a 3D volatility surface that captures the dynamics of implied volatility over time.</p>
+          <p><b>Key Features:</b></p>
+          <ul>
+            <li><i class="bi bi-check-circle-fill"></i> <b>Skew and curvature:</b> Helps traders and risk managers assess mispricing in options markets.</li>
+            <li><i class="bi bi-check-circle-fill"></i> <b>Used in exotic option pricing:</b> Important for pricing barrier options, volatility derivatives, and other structured products.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    </section><!-- /Volatility Plots Section -->
+
+
+
+    
+    
+  </main>
+
+  <footer id="footer" class="footer accent-background">
+
+    <div class="container footer-top">
+      <div class="row gy-4">
+        <div class="col-lg-5 col-md-12 footer-about">
+          <a href="index.html" class="logo d-flex align-items-center">
+            <span class="sitename">Quant Edge</span>
+          </a>
+          <div class="social-links d-flex mt-4">
+            <a href="mailto:wassim.kerdoun@edu.uiz.ac.ma"><i class="bi bi-mailbox" ></i></a>
+            <a href="https://github.com/wassim-kerdoun" target="_blank" rel="noopener noreferrer"><i class="bi bi-github" ></i></a>
+            <a href="https://www.linkedin.com/in/wassim-kerdoun-494a89246/" target="_blank" rel="noopener noreferrer"><i class="bi bi-linkedin" ></i></a>
+          </div>
+        </div>
+
+        <div class="col-lg-2 col-6 footer-links">
+          <h4>Useful Links</h4>
+          <ul>
+            <li><a href="#hero">Home</a></li>
+            <li><a href="#page1">Variance Reduction</a></li>
+            <li><a href="#page2">Discretization</a></li>
+            <li><a href="#page3">Heston Model</a></li>
+            <li><a href="#page4">Volatility Plots</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-3 col-md-12 footer-contact text-center text-md-start">
+          <h4>Contact Us</h4>
+          <p>ENSA Agadir</p>
+          <p>Morocco</p>
+          <p><strong>Email:</strong> <span>wassim.kerdoun@edu.uiz.ac.ma</span></p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="container copyright text-center mt-4">
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">Quant Edge</strong> <span>All Rights Reserved</span></p>
+      <div class="credits">
+        <!-- All the links in the footer should remain intact. -->
+        <!-- You can delete the links only if you've purchased the pro version. -->
+        <!-- Licensing information: https://bootstrapmade.com/license/ -->
+        <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+      </div>
+    </div>
+
+  </footer>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader"></div>
+
+  <!-- Vendor JS Files -->
+  <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/vendor/php-email-form/validate.js"></script>
+  <script src="/static/vendor/aos/aos.js"></script>
+  <script src="/static/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="/static/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="/static/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="/static/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+  <script src="/static/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+
+  <!-- Main JS File -->
+  <script src="/static/main.js"></script>
+
+</body>
+
+</html>

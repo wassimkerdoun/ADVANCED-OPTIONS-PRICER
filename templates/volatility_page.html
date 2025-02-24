@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/header.css">
+    <link rel="stylesheet" href="/static/css/sidebar.css">
+    <link rel="stylesheet" href="/static/css/content.css">
+    <title>Volatility Plots</title>
+</head>
+<body>
+
+    <!-- Navigation Bar (Empty) -->
+    <div class="nav-container">
+        <nav class="navbar navbar-expand-lg navbar-custom navbar-centered">
+            <!-- Empty Navbar -->
+        </nav>
+    </div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-content">
+            <h4 class="mb-4 text-center form-title">Option Pricing Inputs</h4>
+            <form id="pricing-form" class="styled-form" method="POST" action="{{ url_for('volatility_page') }}">
+                <div class="form-group">
+                    <label for="ticker">Ticker Symbol</label>
+                    <input type="text" class="form-control" id="ticker" name="ticker" value="{{ session.get('ticker', 'AAPL') }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="strike-price">Strike Price ($)</label>
+                    <input type="number" class="form-control" id="strike-price" name="strike_price" value="{{ session.get('strike_price', session.get('underlying_price', '')) }}" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="maturity">Maturity (years)</label>
+                    <input type="number" class="form-control" id="maturity" name="maturity" value="{{ session.get('maturity', '1') }}" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="risk-free-rate">Risk-Free Rate (dec)</label>
+                    <input type="number" class="form-control" id="risk-free-rate" name="risk_free_rate" value="{{ session.get('risk_free_rate', '0.05') }}" step="any" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="sigma">Volatility for BSM (dec)</label>
+                    <input type="number" class="form-control" id="sigma" name="sigma" value="{{ session.get('sigma', '0.25') }}" step="any" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="kappa">Kappa</label>
+                    <input type="number" class="form-control" id="kappa" name="kappa" value="{{ session.get('kappa', '2') }}" step="any" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="theta">Theta (dec)</label>
+                    <input type="number" class="form-control" id="theta" name="theta" value="{{ session.get('theta', '0.04') }}" step="any" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="vol-of-vol">Vol of Vol (dec)</label>
+                    <input type="number" class="form-control" id="vol-of-vol" name="vol_of_vol" value="{{ session.get('vol_of_vol', '0.5') }}" step="any" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="rho">Rho (dec)</label>
+                    <input type="number" class="form-control" id="rho" name="rho" value="{{ session.get('rho', '-0.5') }}" step="any" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="v0">Initial Variance (dec)</label>
+                    <input type="number" class="form-control" id="v0" name="v0" value="{{ session.get('v0', '0.04') }}" step="any" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="num-paths">Number of Paths</label>
+                    <input type="number" class="form-control" id="num-paths" name="num_paths" value="{{ session.get('num_paths', 1000) }}" step="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="num-steps">Number of Steps</label>
+                    <input type="number" class="form-control" id="num-steps" name="num_steps" value="{{ session.get('num_steps', 252) }}" step="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Option Type</label>
+                    <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
+                        <label class="btn btn-outline-primary {% if session.get('option_type', 'call') == 'call' %}active{% endif %}">
+                            <input type="radio" name="option_type" value="call" {% if session.get('option_type', 'call') == 'call' %}checked{% endif %}> Call
+                        </label>
+                        <label class="btn btn-outline-primary {% if session.get('option_type', 'call') == 'put' %}active{% endif %}">
+                            <input type="radio" name="option_type" value="put" {% if session.get('option_type', 'call') == 'put' %}checked{% endif %}> Put
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-outline-primary btn-block">Calculate</button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="content" style="margin-left: 350px; padding: 20px;">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="text-center d-none">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <p>Calculating... Please wait.</p>
+        </div>
+
+        <!-- Volatility Smile Plot -->
+        <div class="d-flex justify-content-center">
+            <div class="col-lg-8 mt-4">
+                <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                    <div class="card-header bg-gradient-success text-white py-3">
+                        <h3 class="card-title fw-bold mb-0">Volatility Smile Plot</h3>
+                    </div>
+                    <div class="card-body text-center p-0">
+                        {% if volatility_smile_filename %}
+                            <div id="volatility-smile-plot"></div>
+                            <div id="volatility-smile-fallback" class="d-none text-danger py-3">
+                                Failed to load the Volatility Smile Plot. Please try again later.
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info m-0">
+                                No volatility smile plot available. Submit the form to generate the plot.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Volatility Surface Plot -->
+        <div class="d-flex justify-content-center">
+            <div class="col-lg-8 mt-4">
+                <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                    <div class="card-header bg-gradient-danger text-white py-3">
+                        <h3 class="card-title fw-bold mb-0">Volatility Surface Plot</h3>
+                    </div>
+                    <div class="card-body text-center p-0">
+                        {% if volatility_surface_filename %}
+                            <div id="volatility-surface-plot"></div>
+                            <div id="volatility-surface-fallback" class="d-none text-danger py-3">
+                                Failed to load the Volatility Surface Plot. Please try again later.
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info m-0">
+                                No volatility surface plot available. Submit the form to generate the plot.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Load Plotly.js -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const form = document.getElementById("pricing-form");
+                const spinner = document.getElementById("loading-spinner");
+
+                form.addEventListener("submit", function () {
+                    spinner.classList.remove("d-none"); // Show spinner
+                });
+
+                {% if volatility_smile_filename %}
+                    fetch("{{ url_for('static', filename='plotly/' + volatility_smile_filename) }}")
+                        .then(response => response.json())
+                        .then(figure => Plotly.newPlot('volatility-smile-plot', figure.data, figure.layout))
+                        .catch(() => document.getElementById('volatility-smile-fallback').classList.remove('d-none'));
+                {% endif %}
+
+                {% if volatility_surface_filename %}
+                    fetch("{{ url_for('static', filename='plotly/' + volatility_surface_filename) }}")
+                        .then(response => response.json())
+                        .then(figure => Plotly.newPlot('volatility-surface-plot', figure.data, figure.layout))
+                        .catch(() => document.getElementById('volatility-surface-fallback').classList.remove('d-none'));
+                {% endif %}
+            });
+        </script>
+    </main>
+
+    <!-- External Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

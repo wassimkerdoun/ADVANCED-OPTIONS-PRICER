@@ -1,0 +1,282 @@
+{% extends 'base2.html' %}
+
+{% block title %}Discretization{% endblock %}
+
+{% block content %}
+<main class="content" style="margin-left: 350px; padding: 20px;">
+    
+    <div id="loading-spinner" class="text-center d-none">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <p>Calculating... Please wait.</p>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("pricing-form");
+            const spinner = document.getElementById("loading-spinner");
+    
+            form.addEventListener("submit", function () {
+                spinner.classList.remove("d-none"); // Show spinner
+            });
+        });
+    </script>
+
+    <div class="row gy-4 align-items-stretch">
+        <!-- Left Column: Option Information -->
+        <div class="col-lg-6 col-md-12 d-flex">
+            <div class="debug-info flex-fill p-4 border rounded-4 shadow-lg bg-gradient-light">
+                {% if price %}
+                    <h4 class="mb-4 text-secondary fw-bold">Option Information</h4>
+                    
+                    <!-- Estimated Price -->
+                    <p class="estimated-price text-success fw-bold">
+                        <strong>Estimated Price:</strong> ${{ "%.3f"|format(price) }}
+                    </p>
+                    
+                    <!-- True Market Price -->
+                    <p class="true-price text-muted">
+                        <strong>Market Price:</strong> ${{ "%.3f"|format(true_price) }}
+                    </p>
+    
+                    <!-- Display Greeks -->
+                    {% if greeks %}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped align-middle shadow">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">Greek</th>
+                                        <th scope="col">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Delta</strong></td>
+                                        <td>{{ "%.4f"|format(greeks['Delta']) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Gamma</strong></td>
+                                        <td>{{ "%.4f"|format(greeks['Gamma']) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Vega</strong></td>
+                                        <td>{{ "%.4f"|format(greeks['Vega']) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Rho</strong></td>
+                                        <td>{{ "%.4f"|format(greeks['Rho']) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Theta</strong></td>
+                                        <td>{{ "%.4f"|format(greeks['Theta']) }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="alert alert-warning">Greeks information is unavailable.</p>
+                    {% endif %}
+                {% else %}
+                    <p class="alert alert-danger">No pricing information available. Submit valid inputs to calculate pricing.</p>
+                {% endif %}
+            </div>
+        </div>
+    
+        <!-- Right Column: Results Display -->
+        <div class="col-lg-6 col-md-12 d-flex">
+            <div class="results-display flex-fill p-4 border rounded-4 shadow-lg bg-gradient-light">
+                {% if price %}
+                    <h3 class="mb-4 text-secondary fw-bold">Option Details</h3>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle shadow">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col">Parameter</th>
+                                    <th scope="col">Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Ticker</strong></td>
+                                    <td>{{ session['ticker'] }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Type</strong></td>
+                                    <td>{{ session['option_type'].capitalize() }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Model</strong></td>
+                                    <td>{{ session['method'] }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Underlying Price</strong></td>
+                                    <td>${{ "%.2f"|format(session['underlying_price']) }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Strike Price</strong></td>
+                                    <td>${{ "%.2f"|format(session['strike_price']) }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Risk-Free Rate</strong></td>
+                                    <td>{{ "%.2f"|format(session['risk_free_rate'] * 100) }}%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Volatility (Sigma)</strong></td>
+                                    <td>{{ "%.2f"|format(session['sigma'] * 100) }}%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Implied Volatility</strong></td>
+                                    <td>{{ "%.2f"|format(implied_volatility * 100) }}%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Expiration Date</strong></td>
+                                    <td>{{ expiration_date }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="alert alert-warning">No pricing available yet. Submit valid inputs to calculate pricing.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Plots Section -->
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            {% if plot_filename2 %}
+            <div class="col-lg-8">
+                <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                    <div class="card-header bg-gradient-primary text-white py-3">
+                        <h3 class="card-title fw-bold mb-0">Option Price Plot</h3>
+                    </div>
+                    <div class="card-body text-center p-0">
+                        <img src="{{ url_for('static', filename='plots/' + plot_filename2) }}" 
+                             alt="Option Price Plot" 
+                             class="img-fluid rounded-bottom-3 hover-zoom">
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+    
+            {% if plot_filename %}
+            <div class="col-lg-8 mt-4">
+                <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                    <div class="card-header bg-gradient-success text-white py-3">
+                        <h3 class="card-title fw-bold mb-0">Monte Carlo Paths Plot</h3>
+                    </div>
+                    <div class="card-body text-center p-0">
+                        <img src="{{ url_for('static', filename='images/' + plot_filename) }}" 
+                             alt="Monte Carlo Paths Plot" 
+                             class="img-fluid rounded-bottom-3 hover-zoom">
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if plotly_json_path %}
+                <div class="col-lg-8 mt-4">
+                    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                        <div class="card-header bg-gradient-success text-white py-3">
+                            <h3 class="card-title fw-bold mb-0">Option Price Surface Plot</h3>
+                        </div>
+                        <div class="card-body text-center p-0">
+                            <!-- Placeholder for the plot -->
+                            <div id="plotly-div"></div>
+                            <!-- Fallback message -->
+                            <div id="plotly-fallback" class="d-none text-danger py-3">
+                                Failed to load the plot. Please try again later.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Load Plotly.js asynchronously -->
+                <script src="https://cdn.plot.ly/plotly-latest.min.js" async></script>
+                <script>
+                    // Wait for Plotly.js to load
+                    window.addEventListener('load', function () {
+                        fetch("{{ plotly_json_path }}")
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Failed to load plot data');
+                                }
+                                return response.json();
+                            })
+                            .then(figure => {
+                                // Render the plot
+                                Plotly.newPlot('plotly-div', figure.data, figure.layout);
+                            })
+                            .catch(error => {
+                                console.error('Error loading the plot:', error);
+                                // Show fallback message
+                                document.getElementById('plotly-fallback').classList.remove('d-none');
+                            });
+                    });
+                </script>
+            {% endif %}
+
+            {% if delta_surface_filename %}
+                <div class="col-lg-8 mt-4">
+                    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                        <div class="card-header bg-gradient-success text-white py-3">
+                            <h3 class="card-title fw-bold mb-0">Delta Surface Plot</h3>
+                        </div>
+                        <div class="card-body text-center p-0">
+                            <!-- Placeholder for the plot -->
+                            <div id="delta-div"></div>
+                            <!-- Fallback message -->
+                            <div id="delta-fallback" class="d-none text-danger py-3">
+                                Failed to load the plot. Please try again later.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Load Plotly.js asynchronously -->
+                <script src="https://cdn.plot.ly/plotly-latest.min.js" async></script>
+                <script>
+                    // Wait for Plotly.js to load
+                    window.addEventListener('load', function () {
+                        fetch("{{ url_for('static', filename='plotly/' + delta_surface_filename) }}")
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Failed to load plot data');
+                                }
+                                return response.json();
+                            })
+                            .then(figure => {
+                                // Render the plot
+                                Plotly.newPlot('delta-div', figure.data, figure.layout);
+                            })
+                            .catch(error => {
+                                console.error('Error loading the plot:', error);
+                                // Show fallback message
+                                document.getElementById('delta-fallback').classList.remove('d-none');
+                            });
+                    });
+                </script>
+            {% endif %}
+
+            {% if mcmc_plotfilename %}
+            <div class="col-lg-8">
+                <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                    <div class="card-header bg-gradient-primary text-white py-3">
+                        <h3 class="card-title fw-bold mb-0">MCMC Density Plot</h3>
+                    </div>
+                    <div class="card-body text-center p-0">
+                        <img src="{{ url_for('static', filename='images/' + mcmc_plotfilename) }}" 
+                             alt="MCMC Density Plot" 
+                             class="img-fluid rounded-bottom-3 hover-zoom">
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+
+        </div>
+    </div>
+</main>
+{% endblock %}
