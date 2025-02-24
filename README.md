@@ -29,6 +29,10 @@ The goal of this project is to price European options using various financial mo
    - Compare the convergence speeds of the Monte Carlo methods (Euler-Maruyama and Milstein) for both GBM and Heston models.
    - Analyze the computational efficiency and accuracy of each method.
 
+6. **Variance Reduction Techniques**:
+   - Implement **antithetic variates** and **control variates** to reduce the variance of Monte Carlo estimates.
+   - Compare the effectiveness of these techniques in improving the accuracy of option pricing.
+
 ---
 
 ## **Key Components**
@@ -87,6 +91,27 @@ The goal of this project is to price European options using various financial mo
    - Compare the convergence speeds of the Euler-Maruyama and Milstein schemes for both GBM and Heston models.
    - Analyze the trade-off between computational efficiency and accuracy for each method.
 
+### 6. **Variance Reduction Techniques**
+   - **Antithetic Variates**:
+     - For each random path generated, create a corresponding antithetic path by reversing the sign of the random increments.
+     - The antithetic variates estimator is given by:
+       ```latex
+       \hat{Y}_{\text{AV}} = \frac{1}{2} (Y + Y_{\text{antithetic}}),
+       ```
+       where `Y` is the original estimate and `Y_{\text{antithetic}}` is the estimate from the antithetic path.
+     - This technique reduces variance by introducing negative correlation between paired samples.
+
+   - **Control Variates**:
+     - Use a control variate `C` (a random variable with known expectation) to adjust the Monte Carlo estimate.
+     - The control variates estimator is given by:
+       ```latex
+       \hat{Y}_{\text{CV}} = Y - \beta (C - \mathbb{E}[C]),
+       ```
+       where `β` is a coefficient chosen to minimize the variance of the estimator.
+     - Common choices for `C` include the underlying asset price or a related derivative with a known price.
+
+   - Compare the effectiveness of antithetic variates and control variates in reducing the variance of Monte Carlo estimates.
+
 ---
 
 ## **Tools and Libraries**
@@ -103,7 +128,8 @@ The goal of this project is to price European options using various financial mo
 1. Accurate pricing of European options using the Black-Scholes model and Monte Carlo simulations.
 2. Visualization of the volatility smile and surface under the Heston model.
 3. Comparative analysis of the convergence speeds of Euler-Maruyama and Milstein schemes.
-4. Insights into the computational efficiency and accuracy of different numerical methods.
+4. Implementation and evaluation of variance reduction techniques (antithetic variates and control variates).
+5. Insights into the computational efficiency and accuracy of different numerical methods.
 
 ---
 
