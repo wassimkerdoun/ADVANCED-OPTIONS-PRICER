@@ -35,48 +35,47 @@ The goal of this project is to price European options using various financial mo
 
 ### 1. **Black-Scholes Model**
    - Use the Black-Scholes formula:
-     \[
-     C = S_0 N(d_1) - K e^{-rT} N(d_2),
-     \]
+     ```
+     C = S_0 N(d_1) - K e^(-rT) N(d_2),
+     ```
      where:
-     \[
-     d_1 = \frac{\ln(S_0 / K) + (r + \sigma^2 / 2)T}{\sigma \sqrt{T}}, \quad d_2 = d_1 - \sigma \sqrt{T}.
-     \]
+     ```
+     d_1 = [ln(S_0 / K) + (r + σ^2 / 2)T] / [σ √T],
+     d_2 = d_1 - σ √T.
+     ```
    - Compute the Greeks (Delta, Gamma, Vega, etc.) to understand the sensitivity of option prices to model inputs.
 
 ### 2. **Monte Carlo Simulations**
    - **Geometric Brownian Motion (GBM)**:
-     \[
-     dS_t = r S_t dt + \sigma S_t dW_t,
-     \]
-     where \( r \) is the risk-free rate, \( \sigma \) is the volatility, and \( W_t \) is a Wiener process.
+     ```
+     dS_t = r S_t dt + σ S_t dW_t,
+     ```
+     where `r` is the risk-free rate, `σ` is the volatility, and `W_t` is a Wiener process.
    - **Discretization Schemes**:
      - **Euler-Maruyama**:
-       \[
-       S_{t+\Delta t} = S_t + r S_t \Delta t + \sigma S_t \Delta W_t.
-       \]
+       ```
+       S_{t+Δt} = S_t + r S_t Δt + σ S_t ΔW_t.
+       ```
      - **Milstein** (for improved accuracy):
-       \[
-       S_{t+\Delta t} = S_t + r S_t \Delta t + \sigma S_t \Delta W_t + \frac{1}{2} \sigma^2 S_t (\Delta W_t^2 - \Delta t).
-       \]
+       ```
+       S_{t+Δt} = S_t + r S_t Δt + σ S_t ΔW_t + (1/2) σ^2 S_t (ΔW_t^2 - Δt).
+       ```
    - Simulate multiple paths and compute the option price as the discounted expected payoff:
-     \[
-     \text{Price} = e^{-rT} \mathbb{E}[\max(S_T - K, 0)] \quad (\text{for a call option}).
-     \]
+     ```
+     Price = e^(-rT) * E[max(S_T - K, 0)]  (for a call option).
+     ```
 
 ### 3. **Heston Model**
-   - Simulate the joint dynamics of the asset price \( S_t \) and its volatility \( v_t \):
-     \[
-     dS_t = r S_t dt + \sqrt{v_t} S_t dW_t^1,
-     \]
-     \[
-     dv_t = \kappa (\theta - v_t) dt + \xi \sqrt{v_t} dW_t^2,
-     \]
+   - Simulate the joint dynamics of the asset price `S_t` and its volatility `v_t`:
+     ```
+     dS_t = r S_t dt + √v_t S_t dW_t^1,
+     dv_t = κ (θ - v_t) dt + ξ √v_t dW_t^2,
+     ```
      where:
-     - \( \kappa \) is the mean-reversion rate,
-     - \( \theta \) is the long-term volatility,
-     - \( \xi \) is the volatility of volatility,
-     - \( W_t^1 \) and \( W_t^2 \) are correlated Wiener processes with correlation \( \rho \).
+     - `κ` is the mean-reversion rate,
+     - `θ` is the long-term volatility,
+     - `ξ` is the volatility of volatility,
+     - `W_t^1` and `W_t^2` are correlated Wiener processes with correlation `ρ`.
    - Use Monte Carlo simulations to estimate option prices under the Heston model.
 
 ### 4. **Volatility Smile and Surface**
