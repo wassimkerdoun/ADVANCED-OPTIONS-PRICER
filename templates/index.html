@@ -193,7 +193,7 @@
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
         <h2>Discretization of Geometric Brownian Motion (GBM) SDE</h2>
-        <p>Monte Carlo simulations for stochastic differential equations (SDEs) require numerical discretization methods. The most common approaches are the Euler-Maruyama and Milstein schemes.</p>
+        <p>Monte Carlo simulations for stochastic differential equations (SDEs) require numerical discretization methods. The most common approaches are the Euler-Maruyama, Euler Implicit, and Milstein schemes.</p>
       </div><!-- End Section Title -->
 
       <div class="container">
@@ -224,13 +224,15 @@
                     $$ S_{t+\Delta t} = S_t + \mu S_t \Delta t + \sigma S_t \sqrt{\Delta t} \, Z_t + \frac{1}{2} \sigma^2 S_t (\Delta t Z_t^2 - \Delta t) $$
                   </p>
                 </li>
+                <li><i class="bi bi-check-circle-fill"></i> <strong>Euler Implicit Scheme:</strong> An implicit scheme that offers improved stability:
+                  <p>
+                    $$ S_{t+\Delta t} = \frac{S_t + \sigma \sqrt{\Delta t} Z_t}{1 - \mu \Delta t} $$
+                  </p>
+                  This method requires solving a nonlinear equation at each time step, ensuring better stability in stiff equations.
+                </li>
                 <li><i class="bi bi-check-circle-fill"></i> <strong>Monte Carlo Convergence:</strong> The Milstein scheme reduces discretization error and improves convergence compared to Euler-Maruyama.</li>
               </ul>
               <p>These numerical methods allow efficient simulation of asset prices under stochastic processes, essential for option pricing and risk management.</p>
-
-              <div class="position-relative mt-4">
-                <img src="/static/images/milstein-vs-euler.jpg" class="img-fluid rounded-4" alt="Euler vs Milstein">
-              </div>
             </div>
           </div>
         </div>
@@ -238,6 +240,7 @@
       </div>
 
     </section><!-- /About Section -->
+
 
 
     <!-- Include MathJax for LaTeX rendering -->

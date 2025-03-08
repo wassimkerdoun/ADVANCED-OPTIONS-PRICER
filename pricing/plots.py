@@ -431,6 +431,13 @@ def bs_plot_convergence_speed(results, error, time_dict):
         mode='lines', name='Euler-Maruyama',
         line=dict(color='red')
     ))
+    
+    # Plot Implicit Euler price
+    price_figure.add_trace(go.Scatter(
+        x=steps, y=results['euler_implicit_price'],
+        mode='lines', name='Implicit Euler',
+        line=dict(color='green')
+    ))
 
     # Plot Milstein Scheme price
     price_figure.add_trace(go.Scatter(
@@ -466,6 +473,12 @@ def bs_plot_convergence_speed(results, error, time_dict):
         mode='lines', name='Euler-Maruyama',
         line=dict(color='red')
     ))
+    
+    error_figure.add_trace(go.Scatter(
+        x=steps, y=error['euler_implicit_error'],
+        mode='lines', name='Implicit Euler',
+        line=dict(color='green')
+    ))
 
     error_figure.add_trace(go.Scatter(
         x=steps, y=error['milstein_scheme_error'],
@@ -482,9 +495,10 @@ def bs_plot_convergence_speed(results, error, time_dict):
 
     time_figure = go.Figure()
     time_figure.add_trace(go.Bar(
-        x=['Monte Carlo', 'Euler-Maruyama', 'Milstein Scheme'],
-        y=[time_dict['mc_time'], time_dict['euler_maruyama_time'], time_dict['milstein_scheme_time']],
-        marker=dict(color=['blue', 'red', 'orange']),
+        x=['Monte Carlo', 'Euler-Maruyama', 'Implicit Euler', 'Milstein Scheme'],
+        y=[time_dict['mc_time'], time_dict['euler_maruyama_time'], time_dict['euler_implicit_time'],
+           time_dict['milstein_scheme_time']],
+        marker=dict(color=['blue', 'red', 'green', 'orange']),
         name='Execution Time'
     ))
 
@@ -550,6 +564,15 @@ def heston_plot_convergence_speed(results, error, time_dict):
         name='Euler-Maruyama',
         line=dict(color='blue')
     ))
+    
+    # Add Implicit Euler price
+    price_figure.add_trace(go.Scatter(
+        x=steps,
+        y=results['euler_implicit_price'],
+        mode='lines',
+        name='Implicit Euler',
+        line=dict(color='green')
+    ))
 
     # Add Milstein Scheme price
     price_figure.add_trace(go.Scatter(
@@ -588,6 +611,15 @@ def heston_plot_convergence_speed(results, error, time_dict):
         name='Euler-Maruyama',
         line=dict(color='blue')
     ))
+    
+    # Add Implicit Euler error
+    error_figure.add_trace(go.Scatter(
+        x=steps,
+        y=error['euler_implicit_error'],
+        mode='lines',
+        name='Implicit Euler',
+        line=dict(color='green')
+    ))
 
     # Add Milstein Scheme error
     error_figure.add_trace(go.Scatter(
@@ -611,9 +643,10 @@ def heston_plot_convergence_speed(results, error, time_dict):
 
     # Add execution times
     time_figure.add_trace(go.Bar(
-        x=['Euler-Maruyama', 'Milstein Scheme'],
-        y=[time_dict['euler_maruyama_time'], time_dict['milstein_scheme_time']],
-        marker=dict(color=['blue', 'red']),
+        x=['Euler-Maruyama', 'Implicit Euler', 'Milstein Scheme'],
+        y=[time_dict['euler_maruyama_time'], time_dict['euler_implicit_time'],
+           time_dict['milstein_scheme_time']],
+        marker=dict(color=['blue', 'green', 'red']),
         name='Execution Time'
     ))
 

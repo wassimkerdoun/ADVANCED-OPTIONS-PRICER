@@ -122,7 +122,7 @@
                                 {{ session.get('method') if session.get('method') else 'Select Method' }}
                             </button>
                             <div class="dropdown-menu">
-                                {% for method in ['Euler Maruyama', 'Milstein Scheme'] %}
+                                {% for method in ['Euler Maruyama', 'Implicit Euler', 'Milstein Scheme'] %}
                                     <a class="dropdown-item {% if session.get('method') == method %}active{% endif %}" href="#" data-value="{{ method }}" onclick="setMethod('{{ method | e }}')">{{ method }}</a>
                                 {% endfor %}
                             </div>
@@ -175,7 +175,7 @@
         function setMethod(method) {
             document.getElementById('method-input').value = method;
             
-            if (['Euler Maruyama', 'Milstein Scheme'].includes(method)) {
+            if (['Euler Maruyama', 'Implicit Euler', 'Milstein Scheme'].includes(method)) {
                 document.getElementById('num-paths-container').style.display = 'block';  // Show num-paths
                 document.getElementById('num-steps-container').style.display = 'block';  // Show num-steps
             } else {

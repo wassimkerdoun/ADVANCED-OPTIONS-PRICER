@@ -81,11 +81,11 @@ def save_form_data_home(form_data):
         session['num_paths'] = int(form_data.get('num_paths'))
         session['num_steps'] = int(form_data.get('num_steps'))
         
-    elif form_data.get('method') in ["Gbm Discrete", "Euler Maruyama", "Milstein Scheme"]:
+    elif form_data.get('method') in ["Gbm Discrete", "Euler Maruyama", "Implicit Euler", "Milstein Scheme"]:
         session['num_paths'] = int(form_data.get('num_paths'))
         session['num_steps'] = int(form_data.get('num_steps'))
         
-    elif form_data.get('method') in ["Euler Maruyama", "Milstein Scheme"]:
+    elif form_data.get('method') in ["Euler Maruyama", "Implicit Euler", "Milstein Scheme"]:
         session['kappa'] = float(form_data.get('kappa'))
         session['theta'] = float(form_data.get('theta'))
         session['vol_of_vol'] = float(form_data.get('vol_of_vol'))
@@ -480,11 +480,13 @@ def home_page2():
                 delta_surface, S_range, K_range = greeks_calc.GREEKS(option).simulate_delta_surface()
                 delta_surface_filename = plots.plot_delta_surface(delta_surface, S_range, K_range)
                 session['delta_surface_filename'] = delta_surface_filename
-            elif method in ["Gbm Discrete", "Euler Maruyama", "Milstein Scheme"]:
+            elif method in ["Gbm Discrete", "Euler Maruyama", "Implicit Euler", "Milstein Scheme"]:
                 if method == 'Gbm Discrete':
                     price, paths = gbm_discrete(option, session['num_paths'], session['num_steps'])
                 elif method == 'Euler Maruyama':
                     price, paths = bs_euler_maruyama(option, session['num_paths'], session['num_steps'])
+                elif method == 'Implicit Euler':
+                    price, paths = bs_euler_implicit(option, session['num_paths'], session['num_steps'])
                 elif method == 'Milstein Scheme':
                     price, paths = bs_milstein_scheme(option, session['num_paths'], session['num_steps'])
                     
@@ -645,10 +647,13 @@ def home_page3():
             num_paths = session['num_paths']
             num_steps = session['num_steps']
 
-            if method in ["Euler Maruyama", "Milstein Scheme"]:
+            if method in ["Euler Maruyama", "Implicit Euler", "Milstein Scheme"]:
                 if method == 'Euler Maruyama':
                     price, price_paths = heston_euler_maruyama(option, kappa, theta, vol_of_vol, rho, v0, num_paths, num_steps)
                     v_paths = volatility_euler_maruyama(option, kappa, theta, vol_of_vol, v0, num_paths, num_steps)
+                elif method == 'Implicit Euler':
+                    price, price_paths = heston_euler_implicit(option, kappa, theta, vol_of_vol, rho, v0, num_paths, num_steps)
+                    v_paths = volatility_euler_implicit(option, kappa, theta, vol_of_vol, v0, num_paths, num_steps)
                 elif method == 'Milstein Scheme':
                     price, price_paths = heston_milstein_scheme(option, kappa, theta, vol_of_vol, rho, v0, num_paths, num_steps)
                     v_paths = volatility_milstein_scheme(option, kappa, theta, vol_of_vol, v0, num_paths, num_steps)
@@ -818,7 +823,7 @@ def volatility_page():
             volatility_smile_filename = volatility_utils.plot_volatility_smile(ivs, K_range_smile)
             session['volatility_smile_filename'] = volatility_smile_filename
             
-            iv_surface, K_range_surface, T_range = volatility_utils.volatility_surface(option, kappa, theta, vol_of_vol, rho, v0, num_paths, num_steps)
+            iv_surface, K_range_surface, T_range = volatility_utils.volatility_surface(option)
             volatility_surface_filename = volatility_utils.plot_volatility_surface(iv_surface, K_range_surface, T_range)
             session['volatility_surface_filename'] = volatility_surface_filename
 

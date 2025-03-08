@@ -47,39 +47,45 @@ def volatility_smile(option, kappa, theta, vol_of_vol, rho, v0, num_paths, num_s
         
     return ivs, K_range
 
-def volatility_surface(option, kappa, theta, vol_of_vol, rho, v0, num_paths, num_steps):
+def volatility_surface(option, num_strikes=100, num_maturities=100):
+    
+    """
+    Compute a volatility surface given an option instance and number of strikes and maturities.
+
+    Parameters:
+    option (Option): an instance of the Option class
+    num_strikes (int): number of strikes to compute
+    num_maturities (int): number of maturities to compute
+
+    Returns:
+    iv_surface (ndarray): a 2D array of implied volatilities
+    K_range (ndarray): a 1D array of strikes
+    T_range (ndarray): a 1D array of maturities
+    """
     
     S0, K, T, r, sigma, option_type = option.S, option.K, option.T, option.r, option.sigma, option.option_type
     
-    K_range = np.linspace(0.50 * K, 1.50 * K, 50)
-    T_range = np.linspace(0.25 * T, 1.50 * T, 50)
+    K_range = np.linspace(0.50 * K, 1.50 * K, num_strikes)  
+    T_range = np.linspace(0.25 * T, 1.50 * T, num_maturities)
     iv_surface = np.full((len(K_range), len(T_range)), np.nan)
-    
-    # Simulate the Heston model for the longest maturity
-    max_maturity = np.max(T_range)
-    paths = heston_milstein_scheme(option, kappa, theta, vol_of_vol, rho, v0, num_paths, num_steps)[1]
     
     for i, strike in enumerate(K_range):
         for j, maturity in enumerate(T_range):
-            # Determine the number of steps for this maturity
-            steps = max(1, int((maturity / max_maturity) * num_steps))
+            base_vol = sigma
+            vol_smile = 0.05 * np.abs(strike - S0) / S0
+            sigma_true = base_vol + vol_smile
             
-            # Get terminal asset price
-            terminal_prices = paths[:, steps]
+            if option_type == 'call':
+                market_price = Option(S0, strike, maturity, r, sigma_true, option_type).black_scholes()
+            else:  
+                market_price = Option(S0, strike, maturity, r, sigma_true, option_type).black_scholes()
             
-            # Compute payoffs
-            payoffs = np.maximum(terminal_prices - strike, 0) if option_type == 'call' else np.maximum(strike - terminal_prices, 0)
-            
-            # Compute discounted market price
-            market_price = np.exp(-r * maturity) * np.mean(payoffs)
-            
-            # Compute implied volatility
             try:
-                temp_option = Option(S0, strike, T, r, sigma, option_type)
+                temp_option = Option(S0, strike, maturity, r, sigma_true, option_type)
                 iv_surface[i, j] = brentq_implied_volatility(temp_option, market_price)
             except ValueError:
-                iv_surface[i, j] = np.nan  # Set NaN if implied vol fails to converge
-
+                iv_surface[i, j] = np.nan
+    
     return iv_surface, K_range, T_range
 
 
@@ -164,9 +170,10 @@ def plot_volatility_surface(ivsurface, K_range, T_range):
     # Add surface plot
     fig.add_trace(go.Surface(
         z=ivsurface,
-        x=K_range,
-        y=T_range,
-        colorscale='Viridis'
+        y=K_range,
+        x=T_range,
+        colorscale='Viridis',
+        opacity=0.9
     ))
 
     # Update layout

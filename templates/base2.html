@@ -96,7 +96,7 @@
                                 {{ session.get('method') if session.get('method') else 'Select Method' }}
                             </button>
                             <div class="dropdown-menu">
-                                {% for method in ['Black-Scholes', 'Gbm Discrete', 'Euler Maruyama', 'Milstein Scheme'] %}
+                                {% for method in ['Black-Scholes', 'Gbm Discrete', 'Euler Maruyama', 'Implicit Euler', 'Milstein Scheme'] %}
                                     <a class="dropdown-item {% if session.get('method') == method %}active{% endif %}" href="#" data-value="{{ method }}" onclick="setMethod('{{ method | e }}')">{{ method }}</a>
                                 {% endfor %}
                             </div>
@@ -105,12 +105,12 @@
                     </div>
 
                     <!-- Dynamic Fields for Monte Carlo Methods -->
-                    <div class="form-group" id="num-paths-container" style="display: {% if session.get('method') in ['Gbm Discrete', 'Euler Maruyama', 'Milstein Scheme'] %}block{% else %}none{% endif %};">
+                    <div class="form-group" id="num-paths-container" style="display: {% if session.get('method') in ['Gbm Discrete', 'Euler Maruyama', 'Implicit Euler', 'Milstein Scheme'] %}block{% else %}none{% endif %};">
                         <label for="num-paths">Number of Paths</label>
                         <input type="number" class="form-control" id="num-paths" name="num_paths" value="{{ session.get('num_paths', 1000) }}" step="1" min="1" required>
                     </div>
 
-                    <div class="form-group" id="num-steps-container" style="display: {% if session.get('method') in ['Gbm Discrete', 'Euler Maruyama', 'Milstein Scheme'] %}block{% else %}none{% endif %};">
+                    <div class="form-group" id="num-steps-container" style="display: {% if session.get('method') in ['Gbm Discrete', 'Euler Maruyama', 'Implicit Euler', 'Milstein Scheme'] %}block{% else %}none{% endif %};">
                         <label for="num-steps">Number of Steps</label>
                         <input type="number" class="form-control" id="num-steps" name="num_steps" value="{{ session.get('num_steps', 252) }}" step="1" min="1" required>
                     </div>
@@ -149,7 +149,7 @@
         function setMethod(method) {
             document.getElementById('method-input').value = method;
             
-            if (['Gbm Discrete', 'Euler Maruyama', 'Milstein Scheme'].includes(method)) {
+            if (['Gbm Discrete', 'Euler Maruyama', 'Implicit Euler', 'Milstein Scheme'].includes(method)) {
                 document.getElementById('num-paths-container').style.display = 'block';  // Show num-paths
                 document.getElementById('num-steps-container').style.display = 'block';  // Show num-steps
             } else {

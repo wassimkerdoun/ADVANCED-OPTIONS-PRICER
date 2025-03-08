@@ -1,7 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\pricing"
   ],
-  "SelectedNode": "\\C:\\Users\\wassim\\Documents\\Projects\\flask-option-pricer",
+  "SelectedNode": "\\pricing\\utils.py",
   "PreviewInSolutionExplorer": false
 }
